@@ -1,0 +1,311 @@
+<title>Adawat Tools</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Free calculators and converters in English, French and Arabic.">
+<!--
+  ADS: paste your ad network's <script> here in the <head>,
+  then put the ad unit code inside the <div class="ad-slot"> blocks (search "AD SLOT").
+-->
+<style>
+/* Layout: plain top bar, tool menu on the left (a dropdown on phones), one tool shown at a time */
+:root{
+  --bg:#FFFFFF; --panel:#F5F7F8; --ink:#1D2328; --muted:#5F6B73; --line:#DDE2E6;
+  --accent:#1767C2; --accent-ink:#FFFFFF; --accent-soft:#EAF2FB;
+  --good:#1E7F45; --warn:#A86A00; --bad:#BF3A2B;
+  --font:system-ui, -apple-system, "Segoe UI", Roboto, "Noto Sans", "Noto Sans Arabic", Tahoma, Arial, sans-serif;
+  --mono:ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark){ :root:not([data-theme="light"]){
+  --bg:#15191C; --panel:#1C2226; --ink:#E4E8EB; --muted:#9AA6AE; --line:#2E363C;
+  --accent:#5FA2EE; --accent-ink:#0B1B2E; --accent-soft:#1E2C3B;
+  --good:#52C07E; --warn:#E0A43C; --bad:#EE7564; color-scheme:dark }}
+:root[data-theme="dark"]{
+  --bg:#15191C; --panel:#1C2226; --ink:#E4E8EB; --muted:#9AA6AE; --line:#2E363C;
+  --accent:#5FA2EE; --accent-ink:#0B1B2E; --accent-soft:#1E2C3B;
+  --good:#52C07E; --warn:#E0A43C; --bad:#EE7564; color-scheme:dark }
+
+*{box-sizing:border-box}
+body{background:var(--bg); color:var(--ink); font-family:var(--font); font-size:16px; line-height:1.5}
+.bar{border-bottom:1px solid var(--line)}
+.in{max-width:1000px; margin:0 auto; padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+.bar .in{display:flex; align-items:center; justify-content:space-between; gap:12px; padding-block:12px}
+.logo{font-weight:700; font-size:1.2rem; color:var(--ink); text-decoration:none}
+.logo b{color:var(--accent)}
+select, input, textarea{font:inherit; color:var(--ink); background:var(--bg); border:1px solid var(--line); border-radius:6px; padding:8px 10px; width:100%; min-width:0}
+#lang{width:auto}
+:focus-visible{outline:2px solid var(--accent); outline-offset:1px}
+
+.layout{display:grid; grid-template-columns:200px minmax(0,1fr); gap:28px; padding-block:24px 40px}
+.menu{display:flex; flex-direction:column; gap:2px}
+.menu a{color:var(--ink); text-decoration:none; padding:7px 10px; border-radius:6px; font-size:.95rem}
+.menu a:hover{background:var(--panel)}
+.menu a[aria-current="page"]{background:var(--accent-soft); color:var(--accent); font-weight:600}
+#menu-select{display:none}
+@media (max-width:700px){
+  .layout{grid-template-columns:minmax(0,1fr); gap:16px; padding-block:16px 32px}
+  .menu{display:none} #menu-select{display:block}
+}
+
+.tool h1{font-size:1.6rem; margin:0 0 4px; text-wrap:balance}
+.tool .intro{color:var(--muted); margin:0 0 20px; max-width:60ch}
+.form{display:grid; grid-template-columns:repeat(auto-fit, minmax(150px,1fr)); gap:14px; margin-bottom:18px}
+label{display:flex; flex-direction:column; gap:4px; font-size:.9rem; color:var(--muted)}
+label.check{flex-direction:row; align-items:center; gap:8px; color:var(--ink)}
+label.check input{width:auto}
+textarea{min-height:150px; resize:vertical}
+.out{background:var(--panel); border:1px solid var(--line); border-radius:6px; padding:14px 16px}
+.out table{width:100%; border-collapse:collapse}
+.out td{padding:6px 0; border-bottom:1px solid var(--line)}
+.out tr:last-child td{border-bottom:0}
+.out td:last-child{text-align:end; font-weight:600; font-variant-numeric:tabular-nums}
+.main-res{font-size:1.4rem; font-weight:700; font-variant-numeric:tabular-nums; overflow-wrap:anywhere}
+.good{color:var(--good)} .warn{color:var(--warn)} .bad{color:var(--bad)}
+.pw{font-family:var(--mono); font-size:1.1rem; direction:ltr; text-align:left; overflow-wrap:anywhere}
+.btns{display:flex; flex-wrap:wrap; gap:8px; margin-top:12px}
+button.b{font:inherit; font-weight:600; border:1px solid var(--accent); background:var(--accent); color:var(--accent-ink); padding:8px 14px; border-radius:6px; cursor:pointer}
+button.b.alt{background:transparent; color:var(--accent)}
+.ad-slot:empty{display:none}
+footer{border-top:1px solid var(--line); color:var(--muted); font-size:.85rem}
+footer .in{padding-block:16px}
+</style>
+
+<header class="bar"><div class="in">
+  <a class="logo" href="#age">Adawat<b>.</b></a>
+  <select id="lang" aria-label="Language">
+    <option value="en">English</option><option value="fr">Français</option><option value="ar">العربية</option>
+  </select>
+</div></header>
+
+<div class="in layout">
+  <nav aria-label="Tools">
+    <div class="menu" id="menu"></div>
+    <select id="menu-select" aria-label="Tools"></select>
+  </nav>
+
+  <main>
+    <!-- AD SLOT: top -->
+    <div class="ad-slot"></div>
+
+    <section class="tool" id="age">
+      <h1 data-i18n="age_t"></h1><p class="intro" data-i18n="age_d"></p>
+      <div class="form">
+        <label><span data-i18n="age_dob"></span><input type="date" id="age-dob" value="2000-05-15"></label>
+        <label><span data-i18n="age_on"></span><input type="date" id="age-on"></label>
+      </div>
+      <div class="out"><div class="main-res" id="age-out"></div><div id="age-sub"></div></div>
+    </section>
+
+    <section class="tool" id="bmi" hidden>
+      <h1 data-i18n="bmi_t"></h1><p class="intro" data-i18n="bmi_d"></p>
+      <div class="form">
+        <label><span data-i18n="bmi_w"></span><input type="number" id="bmi-w" value="72" min="1" step="0.1" inputmode="decimal"></label>
+        <label><span data-i18n="bmi_h"></span><input type="number" id="bmi-h" value="175" min="1" step="0.1" inputmode="decimal"></label>
+      </div>
+      <div class="out"><div class="main-res" id="bmi-out"></div><div id="bmi-cat"></div></div>
+    </section>
+
+    <section class="tool" id="pct" hidden>
+      <h1 data-i18n="pct_t"></h1><p class="intro" data-i18n="pct_d"></p>
+      <div class="form">
+        <label><span data-i18n="pct_x"></span><input type="number" id="pct-x" value="20" step="any" inputmode="decimal"></label>
+        <label><span data-i18n="pct_y"></span><input type="number" id="pct-y" value="250" step="any" inputmode="decimal"></label>
+      </div>
+      <div class="out"><table>
+        <tr><td data-i18n="pct_1"></td><td id="pct-1"></td></tr>
+        <tr><td data-i18n="pct_2"></td><td id="pct-2"></td></tr>
+        <tr><td data-i18n="pct_3"></td><td id="pct-3"></td></tr>
+      </table></div>
+    </section>
+
+    <section class="tool" id="loan" hidden>
+      <h1 data-i18n="loan_t"></h1><p class="intro" data-i18n="loan_d"></p>
+      <div class="form">
+        <label><span data-i18n="loan_amt"></span><input type="number" id="loan-a" value="100000" min="0" step="any" inputmode="decimal"></label>
+        <label><span data-i18n="loan_rate"></span><input type="number" id="loan-r" value="6" min="0" step="0.01" inputmode="decimal"></label>
+        <label><span data-i18n="loan_years"></span><input type="number" id="loan-y" value="5" min="0.1" step="any" inputmode="decimal"></label>
+      </div>
+      <div class="out"><table>
+        <tr><td data-i18n="loan_month"></td><td id="loan-m"></td></tr>
+        <tr><td data-i18n="loan_total"></td><td id="loan-t"></td></tr>
+        <tr><td data-i18n="loan_int"></td><td id="loan-i"></td></tr>
+      </table></div>
+    </section>
+
+    <section class="tool" id="unit" hidden>
+      <h1 data-i18n="unit_t"></h1><p class="intro" data-i18n="unit_d"></p>
+      <div class="form">
+        <label><span data-i18n="unit_cat"></span><select id="unit-c"></select></label>
+        <label><span data-i18n="unit_val"></span><input type="number" id="unit-v" value="10" step="any" inputmode="decimal"></label>
+        <label><span data-i18n="unit_from"></span><select id="unit-f"></select></label>
+        <label><span data-i18n="unit_to"></span><select id="unit-to"></select></label>
+      </div>
+      <div class="out"><div class="main-res" id="unit-out"></div></div>
+    </section>
+
+    <section class="tool" id="pw" hidden>
+      <h1 data-i18n="pw_t"></h1><p class="intro" data-i18n="pw_d"></p>
+      <div class="form">
+        <label><span data-i18n="pw_len"></span><input type="number" id="pw-l" value="16" min="6" max="64"></label>
+        <label class="check"><input type="checkbox" id="pw-n" checked><span data-i18n="pw_num"></span></label>
+        <label class="check"><input type="checkbox" id="pw-s" checked><span data-i18n="pw_sym"></span></label>
+      </div>
+      <div class="out"><div class="pw" id="pw-out"></div></div>
+      <div class="btns"><button class="b" type="button" id="pw-gen" data-i18n="pw_gen"></button><button class="b alt" type="button" id="pw-copy" data-i18n="pw_copy"></button></div>
+    </section>
+
+    <section class="tool" id="wc" hidden>
+      <h1 data-i18n="wc_t"></h1><p class="intro" data-i18n="wc_d"></p>
+      <div class="form" style="grid-template-columns:1fr"><label><span data-i18n="wc_lbl"></span><textarea id="wc-in"></textarea></label></div>
+      <div class="out"><table>
+        <tr><td data-i18n="wc_words"></td><td id="wc-w"></td></tr>
+        <tr><td data-i18n="wc_chars"></td><td id="wc-c"></td></tr>
+        <tr><td data-i18n="wc_sent"></td><td id="wc-s"></td></tr>
+        <tr><td data-i18n="wc_read"></td><td id="wc-r"></td></tr>
+      </table></div>
+    </section>
+
+    <!-- AD SLOT: bottom -->
+    <div class="ad-slot"></div>
+  </main>
+</div>
+
+<footer><div class="in">© <span id="yr"></span> Adawat · <span data-i18n="foot"></span></div></footer>
+
+<script>
+const TOOLS=["age","bmi","pct","loan","unit","pw","wc"];
+const T={
+en:{age_t:"Age Calculator",age_d:"Find your exact age in years, months and days.",age_dob:"Date of birth",age_on:"Age at",age_res:"{y} years, {m} months, {d} days",age_tot:"{n} days in total",age_bad:"The birth date must be before the second date.",
+ bmi_t:"BMI Calculator",bmi_d:"Calculate your body mass index from your weight and height.",bmi_w:"Weight (kg)",bmi_h:"Height (cm)",bmi_u:"Underweight",bmi_n:"Normal weight",bmi_o:"Overweight",bmi_ob:"Obese",
+ pct_t:"Percentage Calculator",pct_d:"Work out percentages, ratios and percentage change.",pct_x:"X",pct_y:"Y",pct_1:"X% of Y",pct_2:"X as a % of Y",pct_3:"Change from X to Y",
+ loan_t:"Loan Calculator",loan_d:"Estimate the monthly payment and total interest on a loan.",loan_amt:"Loan amount",loan_rate:"Interest rate (% per year)",loan_years:"Years",loan_month:"Monthly payment",loan_total:"Total paid",loan_int:"Total interest",
+ unit_t:"Unit Converter",unit_d:"Convert length, weight, area and temperature.",unit_cat:"Type",unit_val:"Value",unit_from:"From",unit_to:"To",c_len:"Length",c_wt:"Weight",c_tmp:"Temperature",c_area:"Area",
+ pw_t:"Password Generator",pw_d:"Create a strong random password.",pw_len:"Length",pw_num:"Numbers",pw_sym:"Symbols",pw_gen:"Generate",pw_copy:"Copy",pw_copied:"Copied",
+ wc_t:"Word Counter",wc_d:"Count words, characters and sentences in any text.",wc_lbl:"Your text",wc_words:"Words",wc_chars:"Characters",wc_sent:"Sentences",wc_read:"Reading time (min)",
+ foot:"All calculations are done in your browser."},
+fr:{age_t:"Calculateur d'âge",age_d:"Calculez votre âge exact en années, mois et jours.",age_dob:"Date de naissance",age_on:"Âge au",age_res:"{y} ans, {m} mois, {d} jours",age_tot:"{n} jours au total",age_bad:"La date de naissance doit être avant la seconde date.",
+ bmi_t:"Calcul de l'IMC",bmi_d:"Calculez votre indice de masse corporelle à partir de votre poids et de votre taille.",bmi_w:"Poids (kg)",bmi_h:"Taille (cm)",bmi_u:"Maigreur",bmi_n:"Poids normal",bmi_o:"Surpoids",bmi_ob:"Obésité",
+ pct_t:"Calcul de pourcentage",pct_d:"Calculez un pourcentage, une proportion ou une variation.",pct_x:"X",pct_y:"Y",pct_1:"X % de Y",pct_2:"X en % de Y",pct_3:"Variation de X à Y",
+ loan_t:"Simulateur de prêt",loan_d:"Estimez la mensualité et le coût total d'un crédit.",loan_amt:"Montant",loan_rate:"Taux (% par an)",loan_years:"Années",loan_month:"Mensualité",loan_total:"Total remboursé",loan_int:"Total des intérêts",
+ unit_t:"Convertisseur d'unités",unit_d:"Convertissez longueurs, poids, surfaces et températures.",unit_cat:"Type",unit_val:"Valeur",unit_from:"De",unit_to:"Vers",c_len:"Longueur",c_wt:"Poids",c_tmp:"Température",c_area:"Surface",
+ pw_t:"Générateur de mot de passe",pw_d:"Créez un mot de passe aléatoire et sécurisé.",pw_len:"Longueur",pw_num:"Chiffres",pw_sym:"Symboles",pw_gen:"Générer",pw_copy:"Copier",pw_copied:"Copié",
+ wc_t:"Compteur de mots",wc_d:"Comptez les mots, caractères et phrases d'un texte.",wc_lbl:"Votre texte",wc_words:"Mots",wc_chars:"Caractères",wc_sent:"Phrases",wc_read:"Temps de lecture (min)",
+ foot:"Tous les calculs sont faits dans votre navigateur."},
+ar:{age_t:"حاسبة العمر",age_d:"احسب عمرك بالضبط بالسنوات والأشهر والأيام.",age_dob:"تاريخ الميلاد",age_on:"العمر في",age_res:"{y} سنة و{m} شهر و{d} يوم",age_tot:"المجموع {n} يوم",age_bad:"يجب أن يكون تاريخ الميلاد قبل التاريخ الثاني.",
+ bmi_t:"حاسبة مؤشر كتلة الجسم",bmi_d:"احسب مؤشر كتلة جسمك من وزنك وطولك.",bmi_w:"الوزن (كغ)",bmi_h:"الطول (سم)",bmi_u:"نحافة",bmi_n:"وزن طبيعي",bmi_o:"زيادة في الوزن",bmi_ob:"سمنة",
+ pct_t:"حاسبة النسبة المئوية",pct_d:"احسب النسب المئوية ونسبة التغير.",pct_x:"X",pct_y:"Y",pct_1:"X٪ من Y",pct_2:"X كنسبة من Y",pct_3:"التغير من X إلى Y",
+ loan_t:"حاسبة القرض",loan_d:"احسب القسط الشهري ومجموع الفوائد على القرض.",loan_amt:"مبلغ القرض",loan_rate:"نسبة الفائدة (٪ سنويًا)",loan_years:"السنوات",loan_month:"القسط الشهري",loan_total:"المبلغ الإجمالي",loan_int:"مجموع الفوائد",
+ unit_t:"محول الوحدات",unit_d:"حوّل الطول والوزن والمساحة والحرارة.",unit_cat:"النوع",unit_val:"القيمة",unit_from:"من",unit_to:"إلى",c_len:"الطول",c_wt:"الوزن",c_tmp:"الحرارة",c_area:"المساحة",
+ pw_t:"مولد كلمات السر",pw_d:"أنشئ كلمة سر قوية وعشوائية.",pw_len:"الطول",pw_num:"أرقام",pw_sym:"رموز",pw_gen:"إنشاء",pw_copy:"نسخ",pw_copied:"تم النسخ",
+ wc_t:"عداد الكلمات",wc_d:"احسب عدد الكلمات والأحرف والجمل في أي نص.",wc_lbl:"نصك",wc_words:"الكلمات",wc_chars:"الأحرف",wc_sent:"الجمل",wc_read:"مدة القراءة (دقيقة)",
+ foot:"كل العمليات تتم داخل متصفحك."}
+};
+const LOC={en:"en-US",fr:"fr-FR",ar:"ar-MA"};
+let lang="en", cur="age";
+const $=id=>document.getElementById(id);
+const t=(k,v={})=>(T[lang][k]||T.en[k]||k).replace(/\{(\w+)\}/g,(_,x)=>v[x]);
+const fmt=(n,d=2)=>isFinite(n)?n.toLocaleString(LOC[lang],{maximumFractionDigits:d}):"—";
+
+function buildMenu(){
+  $("menu").innerHTML=TOOLS.map(id=>`<a href="#${id}" data-tool="${id}">${t(id+"_t")}</a>`).join("");
+  $("menu-select").innerHTML=TOOLS.map(id=>`<option value="${id}">${t(id+"_t")}</option>`).join("");
+  $("menu").querySelectorAll("a").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();show(a.dataset.tool)}));
+}
+function show(id){
+  cur=TOOLS.includes(id)?id:"age";
+  TOOLS.forEach(x=>$(x).hidden=x!==cur);
+  $("menu").querySelectorAll("a").forEach(a=>{if(a.dataset.tool===cur)a.setAttribute("aria-current","page");else a.removeAttribute("aria-current")});
+  $("menu-select").value=cur;
+  document.title=t(cur+"_t")+" | Adawat";
+}
+function setLang(l){
+  lang=T[l]?l:"en";
+  const h=document.documentElement; h.lang=lang; h.dir=lang==="ar"?"rtl":"ltr";
+  $("lang").value=lang;
+  document.querySelectorAll("[data-i18n]").forEach(e=>e.textContent=t(e.dataset.i18n));
+  try{localStorage.setItem("adawat-lang",lang)}catch(e){}
+  buildMenu(); show(cur); fillUnits(true); runAll();
+}
+
+function age(){
+  const a=new Date($("age-dob").value), b=new Date($("age-on").value);
+  if(isNaN(a)||isNaN(b)||a>b){$("age-out").textContent="—";$("age-sub").textContent=t("age_bad");return}
+  let y=b.getFullYear()-a.getFullYear(), m=b.getMonth()-a.getMonth(), d=b.getDate()-a.getDate();
+  if(d<0){m--; d+=new Date(b.getFullYear(),b.getMonth(),0).getDate()}
+  if(m<0){y--; m+=12}
+  $("age-out").textContent=t("age_res",{y,m,d});
+  $("age-sub").textContent=t("age_tot",{n:fmt(Math.round((b-a)/864e5),0)});
+}
+function bmi(){
+  const w=+$("bmi-w").value, h=+$("bmi-h").value/100, v=w/(h*h), c=$("bmi-cat");
+  if(!(w>0&&h>0)){$("bmi-out").textContent="—";c.textContent="";return}
+  $("bmi-out").textContent=fmt(v,1);
+  const [k,cls]=v<18.5?["bmi_u","warn"]:v<25?["bmi_n","good"]:v<30?["bmi_o","warn"]:["bmi_ob","bad"];
+  c.textContent=t(k); c.className=cls;
+}
+function pct(){
+  const x=+$("pct-x").value, y=+$("pct-y").value;
+  $("pct-1").textContent=fmt(x*y/100);
+  $("pct-2").textContent=y?fmt(x/y*100)+" %":"—";
+  $("pct-3").textContent=x?(y>=x?"+":"")+fmt((y-x)/x*100)+" %":"—";
+}
+function loan(){
+  const P=+$("loan-a").value, r=+$("loan-r").value/1200, n=Math.round(+$("loan-y").value*12);
+  if(!(P>0&&n>0)){["loan-m","loan-t","loan-i"].forEach(i=>$(i).textContent="—");return}
+  const m=r?P*r/(1-Math.pow(1+r,-n)):P/n;
+  $("loan-m").textContent=fmt(m); $("loan-t").textContent=fmt(m*n,0); $("loan-i").textContent=fmt(m*n-P,0);
+}
+const U={c_len:{m:1,km:1000,cm:.01,mm:.001,mi:1609.344,ft:.3048,in:.0254,yd:.9144},
+ c_wt:{kg:1,g:.001,mg:1e-6,t:1000,lb:.45359237,oz:.028349523125},
+ c_area:{"m²":1,"km²":1e6,"cm²":1e-4,ha:1e4,"ft²":.09290304,acre:4046.8564224},
+ c_tmp:{"°C":0,"°F":0,K:0}};
+const DEF={c_len:["km","mi"],c_wt:["kg","lb"],c_area:["m²","ft²"],c_tmp:["°C","°F"]};
+function fillUnits(keep){
+  const cs=$("unit-c"), c=cs.value||"c_len";
+  cs.innerHTML=Object.keys(U).map(k=>`<option value="${k}">${t(k)}</option>`).join(""); cs.value=c;
+  const keys=Object.keys(U[c]), f=$("unit-f"), to=$("unit-to"), fv=f.value, tv=to.value;
+  const o=keys.map(k=>`<option>${k}</option>`).join(""); f.innerHTML=o; to.innerHTML=o;
+  f.value=keep&&keys.includes(fv)?fv:DEF[c][0]; to.value=keep&&keys.includes(tv)?tv:DEF[c][1];
+}
+function unit(){
+  const c=$("unit-c").value, v=+$("unit-v").value, a=$("unit-f").value, b=$("unit-to").value; let r;
+  if(c==="c_tmp"){const C=a==="°C"?v:a==="°F"?(v-32)*5/9:v-273.15; r=b==="°C"?C:b==="°F"?C*9/5+32:C+273.15}
+  else r=v*U[c][a]/U[c][b];
+  $("unit-out").textContent=`${fmt(v,6)} ${a} = ${fmt(r,6)} ${b}`;
+}
+function pw(){
+  let s="abcdefghijkmnopqrstuvwxyzABCDEFGHJKLMNPQRSTUVWXYZ";
+  if($("pw-n").checked) s+="23456789"; if($("pw-s").checked) s+="!@#$%&*?-_+=";
+  const n=Math.min(64,Math.max(6,+$("pw-l").value||16)), a=new Uint32Array(n); crypto.getRandomValues(a);
+  $("pw-out").textContent=Array.from(a,x=>s[x%s.length]).join("");
+}
+$("pw-copy").addEventListener("click",()=>{
+  const b=$("pw-copy"), sel=()=>getSelection().selectAllChildren($("pw-out"));
+  const done=()=>{b.textContent=t("pw_copied");setTimeout(()=>b.textContent=t("pw_copy"),1500)};
+  try{navigator.clipboard.writeText($("pw-out").textContent).then(done,sel)}catch(e){sel()}
+});
+function wc(){
+  const s=$("wc-in").value, w=(s.trim().match(/\S+/g)||[]).length;
+  $("wc-w").textContent=fmt(w,0); $("wc-c").textContent=fmt(s.length,0);
+  $("wc-s").textContent=fmt((s.match(/[^.!?؟…]+[.!?؟…]+/g)||[]).length||(s.trim()?1:0),0);
+  $("wc-r").textContent=fmt(Math.max(w?1:0,Math.ceil(w/200)),0);
+}
+function runAll(){age();bmi();pct();loan();unit();wc()}
+
+$("age-on").value=new Date().toISOString().slice(0,10);
+$("yr").textContent=new Date().getFullYear();
+["age-dob","age-on"].forEach(i=>$(i).addEventListener("input",age));
+["bmi-w","bmi-h"].forEach(i=>$(i).addEventListener("input",bmi));
+["pct-x","pct-y"].forEach(i=>$(i).addEventListener("input",pct));
+["loan-a","loan-r","loan-y"].forEach(i=>$(i).addEventListener("input",loan));
+$("unit-c").addEventListener("change",()=>{fillUnits(false);unit()});
+["unit-v","unit-f","unit-to"].forEach(i=>$(i).addEventListener("input",unit));
+["pw-l","pw-n","pw-s"].forEach(i=>$(i).addEventListener("input",pw)); $("pw-gen").addEventListener("click",pw);
+$("wc-in").addEventListener("input",wc);
+$("lang").addEventListener("change",e=>setLang(e.target.value));
+$("menu-select").addEventListener("change",e=>show(e.target.value));
+document.querySelector(".logo").addEventListener("click",e=>{e.preventDefault();show("age")});
+
+const h=location.hash.slice(1); if(TOOLS.includes(h)) cur=h;
+let saved=null; try{saved=localStorage.getItem("adawat-lang")}catch(e){}
+const nav=(navigator.language||"en").slice(0,2);
+pw(); setLang(saved||(T[nav]?nav:"en"));
+</script>
